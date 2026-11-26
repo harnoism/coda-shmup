@@ -1,6 +1,7 @@
 {
   "ufoRed": {
     "texture": "ufoRed",
+    "shootAnimation": "ufoShoot",
     "health": 1,
     "spawn": {
       "delay": 500,
@@ -12,6 +13,7 @@
   },
   "ufoPink": {
     "texture": "ufoRed",
+    "shootAnimation": "ufoShoot",
     "tint": "#ff69b4",
     "health": 2,
     "spawn": {
@@ -38,6 +40,38 @@
       "spread": {
         "count": 5,
         "angle": 60
+      }
+    }
+  },
+  "bossMothership": {
+    "texture": "bossMothership",
+    "boss": true,
+    "health": 40,
+    "spawn": {
+      "delay": 1000,
+      "maxActive": 1
+    },
+    "movement": {
+      "speed": 0.1,
+      "stopDistance": 600,
+      "sine": {
+        "amplitude": 250,
+        "frequency": 0.25
+      }
+    },
+    "weapon": {
+      "shootDelayMin": 2000,
+      "shootDelayMax": 2500,
+      "bullet": {
+        "width": 20,
+        "height": 20,
+        "color": "#ffb703",
+        "speed": 380,
+        "damage": 1
+      },
+      "spread": {
+        "count": 16,
+        "angle": 360
       }
     }
   }

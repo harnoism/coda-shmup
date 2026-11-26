@@ -14,6 +14,10 @@ export default class Enemy extends Entity {
     // Can't rely on isTinted for the hit flash: some enemies are permanently tinted
     private _isHit: boolean = false;
 
+    public get isBoss(): boolean {
+        return this._data.boss === true;
+    }
+
     public init(bulletsGroup: Phaser.Physics.Arcade.Group, target: Entity, data: EnemyData) {
         this._target = target;
         this._data = data;
@@ -78,6 +82,8 @@ export default class Enemy extends Entity {
         }
 
         this.arcadeBody.setCircle(this.displayWidth / 2);
+        // Other enemies must not push a boss around
+        this.arcadeBody.setImmovable(this.isBoss);
     }
 
     public enable(x: number, y: number) {
@@ -90,11 +96,19 @@ export default class Enemy extends Entity {
         this._isHit = false;
         this.applyBaseTint();
         this.getComponent(SineMovement)?.reset();
+        this.setScale(1);
+    }
+
+    // A boss only takes a scratch when the player rams it, other enemies are destroyed
+    public onPlayerContact() {
+        const health = this.getComponent(Health);
+        health?.damage(this.isBoss ? 1 : health.max);
     }
 
     public disable() {
         this.stop();
         this.removeAllListeners(Phaser.Animations.Events.ANIMATION_COMPLETE);
+        this.scene.tweens.killTweensOf(this);
 
         this.disableBody(true, true);
         if (this._shootTimer)
@@ -110,25 +124,46 @@ export default class Enemy extends Entity {
     }
 
     private shoot() {
-        this.play('ufoShoot');
-        this.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
-            this.setTexture('sprites', this._data.texture);
+        if (this._data.shootAnimation) {
+            this.play(this._data.shootAnimation);
+            this.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+                this.setTexture('sprites', this._data.texture);
+                this.fire();
+            });
+        } else {
+            this.scene.tweens.add({
+                targets: this,
+                scale: 1.15,
+                duration: 250,
+                yoyo: true,
+                onComplete: () => this.fire()
+            });
+        }
+    }
 
-            this.getComponent(Weapon)?.shootSpread(this, this._data.weapon!.spread);
-            this.scene.sound.play('sfx_laser2');
-        });
+    private fire() {
+        if (!this.active)
+            return;
+
+        this.getComponent(Weapon)?.shootSpread(this, this._data.weapon!.spread);
+        this.scene.sound.play('sfx_laser2');
     }
 
     preUpdate(timeSinceLaunch: number, deltaTime: number) {
         super.preUpdate(timeSinceLaunch, deltaTime)
 
         // Direction to the target: (target - me), normalized to keep only the direction
-        this._directionToTarget.set(this._target.x - this.x, this._target.y - this.y).normalize();
+        this._directionToTarget.set(this._target.x - this.x, this._target.y - this.y);
+        const distanceToTarget: number = this._directionToTarget.length();
+        this._directionToTarget.normalize();
         this.rotation = this._directionToTarget.angle();
 
         // Slow down while flashing after a hit
         const scaledDeltaTime: number = this._isHit ? deltaTime * 0.5 : deltaTime;
-        this.getComponent(Movement)?.move(this, this._directionToTarget, scaledDeltaTime);
+        const stopDistance: number | undefined = this._data.movement.stopDistance;
+        if (stopDistance === undefined || distanceToTarget > stopDistance) {
+            this.getComponent(Movement)?.move(this, this._directionToTarget, scaledDeltaTime);
+        }
         this.getComponent(SineMovement)?.move(this, this._directionToTarget, scaledDeltaTime);
     }
 }

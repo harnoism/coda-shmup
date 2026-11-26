@@ -14,7 +14,8 @@
     "enemies": [
       {"type": "ufoRed", "count": 15},
       {"type": "ufoPink", "count": 5}
-    ]
+    ],
+    "boss": "bossMothership"
   },
   {
     "enemies": [
@@ -26,6 +27,7 @@
     "enemies": [
       {"type": "ufoRed", "count": 25},
       {"type": "ufoPink", "count": 10}
-    ]
+    ],
+    "boss": "bossMothership"
   }
 ]

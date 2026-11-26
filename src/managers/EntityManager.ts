@@ -113,8 +113,7 @@ export default class EntityManager extends Plugins.ScenePlugin implements WaveSp
             this.scene!.physics.add.overlap(this._player, enemies, (player, enemy) => {
                 this.scene!.registry.inc(RegistryConstants.Keys.PLAYER_SCORE);
 
-                const enemyHealth = (enemy as Enemy).getComponent(Health);
-                enemyHealth?.damage(enemyHealth?.max);
+                (enemy as Enemy).onPlayerContact();
 
                 const playerHealth = (player as Player).getComponent(Health);
                 playerHealth?.damage(1);

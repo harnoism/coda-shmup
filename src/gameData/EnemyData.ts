@@ -7,6 +7,10 @@ export type EnemiesData = {
 
 export type EnemyData = {
     texture: string;
+    // Name of an animation played before each shot, to warn the player. Without it, the enemy swells briefly instead
+    shootAnimation?: string;
+    // A boss is immovable and survives touching the player
+    boss?: boolean;
     // Hex color like "#ff69b4", tints the texture to tell enemies apart without a new sprite
     tint?: string;
     health: number;
@@ -26,6 +30,8 @@ export type EnemySpawnData = {
 export type EnemyMovementData = {
     // Pixels per millisecond, toward the player
     speed: number;
+    // Optional: stop chasing the player closer than this distance (pixels)
+    stopDistance?: number;
     // Optional: also weave from side to side of the path to the player
     sine?: SineMovementData;
 }
