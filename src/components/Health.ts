@@ -1,5 +1,6 @@
 import IComponent from "./IComponent.ts";
 import Entity from "../entities/Entity.ts";
+import GameConstants from "../GameConstants.ts";
 
 export default class Health extends Phaser.Events.EventEmitter implements IComponent {
     public enabled: boolean = true;
@@ -47,27 +48,13 @@ export default class Health extends Phaser.Events.EventEmitter implements ICompo
         if (emitEvents && this._current !== prev) {
             this.emit(Health.CHANGE_EVENT, this._current);
 
+            const sceneEvents = this._entity.scene.events;
+            if (delta < 0) {
+                sceneEvents.emit(GameConstants.Events.ENTITY_DAMAGED_EVENT, this._entity);
+            }
+
             if (this._current <= 0 && prev > 0) {
-                const scene = this._entity.scene;
-                const explosion = scene.add.image(this._entity.x, this._entity.y, "sprites",
-                    "star1");
-
-                scene.tweens.add({
-                    targets: explosion,
-                    scale: [4, 8, 2, 0],
-                    ease: 'Back.easeOut',
-                    duration: 800
-                });
-
-                scene.tweens.add({
-                    targets: explosion,
-                    alpha: { from: 1, to: 0 },
-                    ease: 'Quad.easeIn',
-                    duration: 1000
-                }).once('complete', function(_tween: any, _targets: any){
-                    explosion.destroy();
-                }, this);
-
+                sceneEvents.emit(GameConstants.Events.ENTITY_DIED_EVENT, this._entity);
                 this.emit(Health.DEATH_EVENT);
             }
         }

@@ -22,7 +22,7 @@ export default class Player extends Entity {
     private _lastShotTime: number;
     private readonly _moveDirection: Phaser.Math.Vector2 = new Phaser.Math.Vector2();
     private readonly _shootDirection: Phaser.Math.Vector2 = new Phaser.Math.Vector2();
-    private _targets: Phaser.Physics.Arcade.Group;
+    private _targets: Phaser.Physics.Arcade.Group[] = [];
 
     constructor(scene: Scene, x: number, y: number) {
         super(scene, x, y, 'sprites');
@@ -36,8 +36,8 @@ export default class Player extends Entity {
         }
     }
 
-    public init(bulletsGroup: Phaser.Physics.Arcade.Group) {
-        this.addComponent(new Health(3, this));
+    public init(bulletsGroup: Phaser.Physics.Arcade.Group, health: number) {
+        this.addComponent(new Health(health, this));
         this.addComponent(new Movement());
         this.addComponent(new Weapon(bulletsGroup, this._bulletData));
 
@@ -109,11 +109,11 @@ export default class Player extends Entity {
         }
     }
 
-    public setTargets(targets: Phaser.Physics.Arcade.Group) {
+    public setTargets(targets: Phaser.Physics.Arcade.Group[]) {
         this._targets = targets;
     }
 
     private findNearestTarget(): Entity | null {
-        return this.scene.physics.closest(this, this._targets.getMatching('active', true)) as Entity | null;
+        return this.scene.physics.closest(this, this._targets.flatMap(group => group.getMatching('active', true))) as Entity | null;
     }
 }
