@@ -49,12 +49,13 @@ export default class HomeScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.text(this.scale.width / 2, this.scale.width / 2, 'CODA SHMUP',
+        const titleY: number = this.scale.height * 0.3;
+        this.add.text(this.scale.width / 2, titleY, 'CODA SHMUP',
             {fontSize: '72px', color: '#fff', fontFamily: 'future'}).setOrigin(0.5);
-        this.add.text(this.scale.width / 2, this.scale.width / 2 + 72, 'Press SPACE to start',
+        this.add.text(this.scale.width / 2, titleY + 72, 'Press SPACE to start',
             {fontSize: '32px', color: '#fff'}).setOrigin(0.5);
 
-        this.createDifficultySelector();
+        this.createDifficultySelector(titleY + 192);
 
         // Ignore the OS key repeat: SPACE may still be held from the previous game
         this.input.keyboard?.on('keydown-SPACE', (event: KeyboardEvent) => {
@@ -69,7 +70,7 @@ export default class HomeScene extends Phaser.Scene {
     }
 
     // LEFT and RIGHT cycle through the difficulties of difficulties.json, the choice is saved between sessions
-    private createDifficultySelector() {
+    private createDifficultySelector(y: number) {
         const difficulties = this.cache.json.get('difficulties') as DifficultiesData;
         const difficultyKeys: string[] = Object.keys(difficulties);
 
@@ -78,7 +79,6 @@ export default class HomeScene extends Phaser.Scene {
         let index: number = Math.max(0, difficultyKeys.indexOf(savedKey));
 
         const centerX: number = this.scale.width / 2;
-        const y: number = this.scale.width / 2 + 192;
         const difficultyText = this.add.text(centerX, y, '', {fontSize: '48px', color: '#fff', fontFamily: 'future'})
             .setOrigin(0.5);
         this.add.text(centerX, y + 72, 'LEFT / RIGHT to change the difficulty', {fontSize: '32px', color: '#fff'})
