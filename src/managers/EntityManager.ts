@@ -3,7 +3,9 @@ import Health from "../components/Health.ts";
 import Bullet from "../entities/Bullet.ts";
 import Enemy from "../entities/Enemy.ts";
 import Player from "../entities/Player.ts";
+import type {DifficultiesData, DifficultyData} from "../gameData/DifficultyData.ts";
 import type {EnemiesData, EnemyData} from "../gameData/EnemyData.ts";
+import DifficultyUtils from "../utils/DifficultyUtils.ts";
 import GroupUtils from "../utils/GroupUtils.ts";
 import GameConstants from "../GameConstants.ts";
 import RegistryConstants from "../RegistryConstants.ts";
@@ -46,7 +48,7 @@ export default class EntityManager extends Plugins.ScenePlugin {
         GroupUtils.populate(64, this._playerBullets);
 
         this._player = new Player(this.scene!, GameConstants.ARENA_WIDTH / 2, GameConstants.ARENA_HEIGHT / 2);
-        this._player.init(this._playerBullets);
+        this._player.init(this._playerBullets, this.getDifficulty().playerHealth);
 
         console.log("[EntityManager] Player spawned");
 
@@ -62,7 +64,9 @@ export default class EntityManager extends Plugins.ScenePlugin {
         // The plugin outlives scene restarts: drop the groups of the previous run
         this._enemyGroups = [];
         const enemiesData = this.scene!.cache.json.get('enemies') as EnemiesData;
-        for (const enemyData of Object.values(enemiesData)) {
+        const difficulty = this.getDifficulty();
+        for (const baseEnemyData of Object.values(enemiesData)) {
+            const enemyData = DifficultyUtils.scaleEnemyData(baseEnemyData, difficulty);
             const enemies = this.scene!.physics.add.group({
                 classType: Enemy,
                 defaultKey: 'sprites',
@@ -125,6 +129,14 @@ export default class EntityManager extends Plugins.ScenePlugin {
         });
 
         console.log("[EntityManager] Group collisions initialized");
+    }
+
+    // The difficulty picked in the home menu, or the default one
+    private getDifficulty(): DifficultyData {
+        const difficulties = this.scene!.cache.json.get('difficulties') as DifficultiesData;
+        const difficultyKey: string = this.scene!.registry.get(RegistryConstants.Keys.DIFFICULTY) ?? GameConstants.DEFAULT_DIFFICULTY;
+
+        return difficulties[difficultyKey] ?? difficulties[GameConstants.DEFAULT_DIFFICULTY];
     }
 
     private spawnEnemy(enemies: Physics.Arcade.Group, enemyData: EnemyData) {

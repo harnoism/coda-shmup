@@ -1,0 +1,26 @@
+{
+  "easy": {
+    "label": "EASY",
+    "spawnDelayMultiplier": 1.5,
+    "maxActiveMultiplier": 0.6,
+    "enemySpeedMultiplier": 0.8,
+    "bulletSpeedMultiplier": 0.8,
+    "playerHealth": 5
+  },
+  "normal": {
+    "label": "NORMAL",
+    "spawnDelayMultiplier": 1,
+    "maxActiveMultiplier": 1,
+    "enemySpeedMultiplier": 1,
+    "bulletSpeedMultiplier": 1,
+    "playerHealth": 3
+  },
+  "hard": {
+    "label": "HARD",
+    "spawnDelayMultiplier": 0.6,
+    "maxActiveMultiplier": 1.5,
+    "enemySpeedMultiplier": 1.2,
+    "bulletSpeedMultiplier": 1.2,
+    "playerHealth": 2
+  }
+}

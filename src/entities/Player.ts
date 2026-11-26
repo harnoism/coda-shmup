@@ -36,8 +36,8 @@ export default class Player extends Entity {
         }
     }
 
-    public init(bulletsGroup: Phaser.Physics.Arcade.Group) {
-        this.addComponent(new Health(3, this));
+    public init(bulletsGroup: Phaser.Physics.Arcade.Group, health: number) {
+        this.addComponent(new Health(health, this));
         this.addComponent(new Movement());
         this.addComponent(new Weapon(bulletsGroup, this._bulletData));
 

@@ -11,6 +11,9 @@ export default class GameConstants {
         GAME_OVER: "GameOverScene",
     } as const);
 
+    // Key of the difficulty in difficulties.json used until the player picks one
+    public static readonly DEFAULT_DIFFICULTY: string = "normal";
+
     public static readonly MAX_SCORE_DIGITS: number = 6;
 
     // Small enough for the planet, at the center, to stay visible from the arena corners
