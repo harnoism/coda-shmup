@@ -4,13 +4,21 @@ import Bullet from "../entities/Bullet.ts";
 import Enemy from "../entities/Enemy.ts";
 import Player from "../entities/Player.ts";
 import type {DifficultiesData, DifficultyData} from "../gameData/DifficultyData.ts";
-import type {EnemiesData, EnemyData} from "../gameData/EnemyData.ts";
+import type {EnemiesData, EnemyData, EnemySpawnData} from "../gameData/EnemyData.ts";
+import type {WavesData} from "../gameData/WaveData.ts";
+import WaveManager, {WaveSpawner} from "./WaveManager.ts";
 import DifficultyUtils from "../utils/DifficultyUtils.ts";
 import GroupUtils from "../utils/GroupUtils.ts";
 import GameConstants from "../GameConstants.ts";
 import RegistryConstants from "../RegistryConstants.ts";
 
-export default class EntityManager extends Plugins.ScenePlugin {
+// An enemy type of enemies.json: its pooled enemies and its data scaled by the difficulty
+type EnemyType = {
+    group: Physics.Arcade.Group;
+    data: EnemyData;
+}
+
+export default class EntityManager extends Plugins.ScenePlugin implements WaveSpawner {
     public static readonly PLUGIN_KEY: string = 'EntityManager';
     public static readonly MAPPING_NAME: string = 'entityManager';
 
@@ -26,8 +34,7 @@ export default class EntityManager extends Plugins.ScenePlugin {
 
     private _player: Player;
     private _playerBullets: Physics.Arcade.Group;
-    // One pooled group per enemy type of enemies.json
-    private _enemyGroups: Physics.Arcade.Group[] = [];
+    private readonly _enemyTypes: Map<string, EnemyType> = new Map();
     private _enemyBullets: Physics.Arcade.Group;
     private readonly _spawnOffset: Phaser.Math.Vector2 = new Phaser.Math.Vector2();
 
@@ -61,13 +68,13 @@ export default class EntityManager extends Plugins.ScenePlugin {
         this._enemyBullets = this.scene!.physics.add.group(this.bulletGroupConfig);
         GroupUtils.populate(256, this._enemyBullets);
 
-        // The plugin outlives scene restarts: drop the groups of the previous run
-        this._enemyGroups = [];
+        // The plugin outlives scene restarts: drop the types of the previous run
+        this._enemyTypes.clear();
         const enemiesData = this.scene!.cache.json.get('enemies') as EnemiesData;
         const difficulty = this.getDifficulty();
-        for (const baseEnemyData of Object.values(enemiesData)) {
+        for (const [enemyKey, baseEnemyData] of Object.entries(enemiesData)) {
             const enemyData = DifficultyUtils.scaleEnemyData(baseEnemyData, difficulty);
-            const enemies = this.scene!.physics.add.group({
+            const group = this.scene!.physics.add.group({
                 classType: Enemy,
                 defaultKey: 'sprites',
                 defaultFrame: enemyData.texture,
@@ -75,30 +82,25 @@ export default class EntityManager extends Plugins.ScenePlugin {
                     (enemy as Enemy).init(this._enemyBullets, this._player, enemyData);
                 }
             });
-            this._enemyGroups.push(enemies);
-
-            // Spawn enemies of this type indefinitely
-            this.scene!.time.addEvent({
-                delay: enemyData.spawn.delay,
-                callback: this.spawnEnemy,
-                args: [enemies, enemyData],
-                callbackScope: this,
-                loop: true
-            });
+            this._enemyTypes.set(enemyKey, {group, data: enemyData});
         }
 
-        this._player.setTargets(this._enemyGroups);
+        this._player.setTargets(Array.from(this._enemyTypes.values(), enemyType => enemyType.group));
+
+        const wavesData = this.scene!.cache.json.get('waves') as WavesData;
+        new WaveManager(this.scene!, wavesData, difficulty.waveCountMultiplier, this).start();
 
         console.log("[EntityManager] Enemies initialized");
     }
 
     public initGroupCollisions() {
-        for (let i = 0; i < this._enemyGroups.length; i++) {
-            const enemies = this._enemyGroups[i];
+        const enemyGroups: Physics.Arcade.Group[] = Array.from(this._enemyTypes.values(), enemyType => enemyType.group);
+        for (let i = 0; i < enemyGroups.length; i++) {
+            const enemies = enemyGroups[i];
 
             // Push enemies apart so they don't stack into a single blob, including enemies of other types
-            for (let j = i; j < this._enemyGroups.length; j++) {
-                this.scene!.physics.add.collider(enemies, this._enemyGroups[j]);
+            for (let j = i; j < enemyGroups.length; j++) {
+                this.scene!.physics.add.collider(enemies, enemyGroups[j]);
             }
 
             this.scene!.physics.add.overlap(this._playerBullets, enemies, (bullet, enemy) => {
@@ -139,14 +141,27 @@ export default class EntityManager extends Plugins.ScenePlugin {
         return difficulties[difficultyKey] ?? difficulties[GameConstants.DEFAULT_DIFFICULTY];
     }
 
-    private spawnEnemy(enemies: Physics.Arcade.Group, enemyData: EnemyData) {
-        if (enemies.countActive(true) >= enemyData.spawn.maxActive) {
-            return;
+    public getSpawnData(enemyKey: string): EnemySpawnData {
+        return this._enemyTypes.get(enemyKey)!.data.spawn;
+    }
+
+    public countActive(enemyKey: string): number {
+        return this._enemyTypes.get(enemyKey)!.group.countActive(true);
+    }
+
+    public countAllActive(): number {
+        let total: number = 0;
+        for (const enemyType of this._enemyTypes.values()) {
+            total += enemyType.group.countActive(true);
         }
 
-        const enemy = enemies.get() as Enemy;
+        return total;
+    }
+
+    public spawn(enemyKey: string): boolean {
+        const enemy = this._enemyTypes.get(enemyKey)!.group.get() as Enemy | null;
         if (!enemy) {
-            return;
+            return false;
         }
 
         // Spawn on a circle around the camera view, a bit further than its corners: always outside the screen.
@@ -159,5 +174,7 @@ export default class EntityManager extends Plugins.ScenePlugin {
         this.game!.events.emit(GameConstants.Events.ENEMY_SPAWNED_EVENT, enemy);
 
         console.log("[EntityManager] Enemy spawned");
+
+        return true;
     }
 }

@@ -9,6 +9,8 @@ export type DifficultyData = {
     spawnDelayMultiplier: number;
     // Multiplies the number of enemies of each type allowed alive at once
     maxActiveMultiplier: number;
+    // Multiplies the number of enemies of each wave
+    waveCountMultiplier: number;
     enemySpeedMultiplier: number;
     bulletSpeedMultiplier: number;
     playerHealth: number;
