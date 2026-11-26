@@ -1,4 +1,4 @@
-import {Scene, Time} from "phaser";
+import {Scene} from "phaser";
 import GameConstants from "../GameConstants.ts";
 import type {EnemySpawnData} from "../gameData/EnemyData.ts";
 import type {WaveData, WavesData} from "../gameData/WaveData.ts";
