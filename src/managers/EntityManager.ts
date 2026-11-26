@@ -106,6 +106,7 @@ export default class EntityManager extends Plugins.ScenePlugin implements WaveSp
             this.scene!.physics.add.overlap(this._playerBullets, enemies, (bullet, enemy) => {
                 this.scene!.registry.inc(RegistryConstants.Keys.PLAYER_SCORE);
 
+                this.emitBulletHit(bullet as Bullet);
                 (bullet as Bullet).disable();
                 (enemy as Enemy).getComponent(Health)?.damage((bullet as Bullet).damage);
             });
@@ -123,6 +124,7 @@ export default class EntityManager extends Plugins.ScenePlugin implements WaveSp
         }
 
         this.scene!.physics.add.overlap(this._player, this._enemyBullets, (player, bullet) => {
+            this.emitBulletHit(bullet as Bullet);
             (bullet as Bullet).disable();
             (player as Player).getComponent(Health)?.damage((bullet as Bullet).damage);
 
@@ -130,6 +132,10 @@ export default class EntityManager extends Plugins.ScenePlugin implements WaveSp
         });
 
         console.log("[EntityManager] Group collisions initialized");
+    }
+
+    private emitBulletHit(bullet: Bullet) {
+        this.scene!.events.emit(GameConstants.Events.BULLET_HIT_EVENT, bullet.x, bullet.y, bullet.color);
     }
 
     // The difficulty picked in the home menu, or the default one

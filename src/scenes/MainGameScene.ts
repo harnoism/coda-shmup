@@ -3,6 +3,7 @@ import Health from "../components/Health.ts";
 import RegistryConstants from "../RegistryConstants.ts";
 import SaveManager from "../managers/SaveManager.ts";
 import SaveConstants from "../SaveConstants.ts";
+import EffectsManager from "../managers/EffectsManager.ts";
 import EntityManager from "../managers/EntityManager.ts";
 import GameConstants from "../GameConstants.ts";
 
@@ -31,6 +32,9 @@ export default class MainGameScene extends Scene {
         if (!this.entityManager) {
             console.error('EntityManager plugin not found');
         }
+
+        const effectsManager = new EffectsManager(this);
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => effectsManager.destroy());
 
         const player = this.entityManager.initAndSpawnPlayer();
         player.getComponent(Health)?.once(Health.DEATH_EVENT, () => {

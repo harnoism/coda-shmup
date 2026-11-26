@@ -11,13 +11,14 @@ export default class MainUIScene extends Scene {
     private static readonly BOSS_BAR_WIDTH: number = 800;
     private static readonly BOSS_BAR_HEIGHT: number = 28;
     private static readonly BOSS_BAR_COLOR: number = 0xff4d8d;
+    private static readonly BOSS_BAR_CSS_COLOR: string = "#ff4d8d";
 
     private _hearts: GameObjects.Image[] = [];
     private _scoreText: GameObjects.BitmapText;
-    private _waveText: GameObjects.BitmapText;
-    private _waveBanner: GameObjects.BitmapText;
-    private _bossBanner: GameObjects.BitmapText;
-    private _bossLabel: GameObjects.BitmapText;
+    private _waveText: GameObjects.Text;
+    private _waveBanner: GameObjects.Text;
+    private _bossBanner: GameObjects.Text;
+    private _bossLabel: GameObjects.Text;
     private _bossBar: GameObjects.Graphics;
 
     constructor() {
@@ -50,21 +51,26 @@ export default class MainUIScene extends Scene {
         this._scoreText = this.add.bitmapText(this.scale.width - MainUIScene.MARGIN, MainUIScene.MARGIN, "future-bmp", scoreStr, 128)
             .setOrigin(1, 0);
 
-        this._waveText = this.add.bitmapText(MainUIScene.MARGIN, MainUIScene.MARGIN + 96, "future-bmp", "", 64);
+        // The bitmap font only has digits: letters use the TTF font
+        this._waveText = this.add.text(MainUIScene.MARGIN, MainUIScene.MARGIN + 96, "", this.textStyle(40, "#ffffff"));
 
         const centerX: number = this.scale.width / 2;
-        this._waveBanner = this.add.bitmapText(centerX, this.scale.height * 0.35, "future-bmp", "", 160)
+        this._waveBanner = this.add.text(centerX, this.scale.height * 0.35, "", this.textStyle(128, "#ffffff"))
             .setOrigin(0.5).setAlpha(0);
-        this._bossBanner = this.add.bitmapText(centerX, this.scale.height * 0.35 + 140, "future-bmp", "BOSS", 96)
-            .setOrigin(0.5).setTint(MainUIScene.BOSS_BAR_COLOR).setAlpha(0);
+        this._bossBanner = this.add.text(centerX, this.scale.height * 0.35 + 120, "BOSS", this.textStyle(80, MainUIScene.BOSS_BAR_CSS_COLOR))
+            .setOrigin(0.5).setAlpha(0);
 
-        this._bossLabel = this.add.bitmapText(centerX, MainUIScene.MARGIN - 24, "future-bmp", "BOSS", 48)
-            .setOrigin(0.5, 0).setTint(MainUIScene.BOSS_BAR_COLOR).setVisible(false);
+        this._bossLabel = this.add.text(centerX, MainUIScene.MARGIN - 24, "BOSS", this.textStyle(40, MainUIScene.BOSS_BAR_CSS_COLOR))
+            .setOrigin(0.5, 0).setVisible(false);
         this._bossBar = this.add.graphics().setVisible(false);
 
         this.scene.bringToTop();
 
         console.log("MainUIScene created");
+    }
+
+    private textStyle(fontSize: number, color: string): Phaser.Types.GameObjects.Text.TextStyle {
+        return {fontSize: fontSize + "px", color, fontFamily: "future", stroke: "#000000", strokeThickness: fontSize / 10};
     }
 
     private onPlayerScoreChanged(_: any, value: number) {
@@ -99,7 +105,7 @@ export default class MainUIScene extends Scene {
         this._waveBanner.setText("WAVE " + waveNumber);
 
         // Pop in, stay readable, then fade out
-        const targets: GameObjects.BitmapText[] = hasBoss ? [this._waveBanner, this._bossBanner] : [this._waveBanner];
+        const targets: GameObjects.Text[] = hasBoss ? [this._waveBanner, this._bossBanner] : [this._waveBanner];
         this.tweens.add({
             targets,
             alpha: {from: 0, to: 1},

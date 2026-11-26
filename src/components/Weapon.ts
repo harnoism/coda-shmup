@@ -3,6 +3,7 @@ import {BulletData} from "../gameData/BulletData.ts";
 import {SpreadShotData} from "../gameData/SpreadShotData.ts";
 import Bullet from "../entities/Bullet.ts";
 import Entity from "../entities/Entity.ts";
+import GameConstants from "../GameConstants.ts";
 import IComponent from "./IComponent.ts";
 
 export default class Weapon implements IComponent {
@@ -35,6 +36,7 @@ export default class Weapon implements IComponent {
             const bulletVelocity: Phaser.Math.Vector2 = sourceForward.clone().scale(this._bulletData.speed);
             bullet.enable(source.x + sourceForward.x * source.arcadeBody.radius, source.y + sourceForward.y * source.arcadeBody.radius,
                 bulletVelocity.x, bulletVelocity.y, this._bulletData);
+            source.scene.events.emit(GameConstants.Events.BULLET_FIRED_EVENT, bullet.x, bullet.y, this._bulletData.color);
 
             // Maths way
             // const forwardVectorX: number = Math.cos(source.rotation);

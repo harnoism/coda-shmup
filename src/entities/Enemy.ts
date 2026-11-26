@@ -6,6 +6,8 @@ import SineMovement from "../components/SineMovement.ts";
 import Weapon from "../components/Weapon.ts";
 
 export default class Enemy extends Entity {
+    private static readonly DEFAULT_EFFECT_COLOR: string = "#f25f5c";
+
     private _data: EnemyData;
     private _shootTimerConfig: Phaser.Types.Time.TimerEventConfig;
     private _shootTimer: Phaser.Time.TimerEvent | undefined;
@@ -13,6 +15,12 @@ export default class Enemy extends Entity {
     private readonly _directionToTarget: Phaser.Math.Vector2 = new Phaser.Math.Vector2();
     // Can't rely on isTinted for the hit flash: some enemies are permanently tinted
     private _isHit: boolean = false;
+
+    // Color of the particles when this enemy dies: its tint, else its bullets color
+    public get effectColor(): number {
+        const hexColor: string = this._data.tint ?? this._data.weapon?.bullet.color ?? Enemy.DEFAULT_EFFECT_COLOR;
+        return Phaser.Display.Color.HexStringToColor(hexColor).color;
+    }
 
     public get isBoss(): boolean {
         return this._data.boss === true;

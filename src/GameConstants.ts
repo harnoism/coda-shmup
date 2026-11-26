@@ -3,6 +3,12 @@ export default class GameConstants {
         PLAYER_SPAWNED_EVENT: "playerSpawned",
         ENEMY_SPAWNED_EVENT: "enemySpawned",
         WAVE_STARTED_EVENT: "waveStarted",
+        // Emitted on the scene events, for the visual effects
+        ENTITY_DAMAGED_EVENT: "entityDamaged",
+        ENTITY_DIED_EVENT: "entityDied",
+        BULLET_FIRED_EVENT: "bulletFired",
+        BULLET_HIT_EVENT: "bulletHit",
+        BULLET_TRAIL_EVENT: "bulletTrail",
     } as const);
 
     public static readonly SceneKeys = Object.freeze({
