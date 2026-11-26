@@ -1,34 +1,33 @@
-import type {BulletData} from '../gameData/BulletData.ts';
+import type {EnemyData} from '../gameData/EnemyData.ts';
 import Entity from './Entity.ts';
 import Health from "../components/Health.ts";
 import Movement from "../components/Movement.ts";
+import SineMovement from "../components/SineMovement.ts";
 import Weapon from "../components/Weapon.ts";
 
 export default class Enemy extends Entity {
-    private readonly _bulletData: BulletData = {
-        width: 12,
-        height: 12,
-        color: 0xf25f5c,
-        speed: 512,
-        damage: 1,
-    };
+    private _data: EnemyData;
     private _shootTimerConfig: Phaser.Types.Time.TimerEventConfig;
     private _shootTimer: Phaser.Time.TimerEvent | undefined;
     private _target: Entity;
     private readonly _directionToTarget: Phaser.Math.Vector2 = new Phaser.Math.Vector2();
+    // Can't rely on isTinted for the hit flash: some enemies are permanently tinted
+    private _isHit: boolean = false;
 
-    public init(bulletsGroup: Phaser.Physics.Arcade.Group, target: Entity) {
+    public init(bulletsGroup: Phaser.Physics.Arcade.Group, target: Entity, data: EnemyData) {
         this._target = target;
+        this._data = data;
 
-        this.addComponent(new Health(1, this));
-        this.addComponent(new Movement(0.2));
-        this.addComponent(new Weapon(bulletsGroup, this._bulletData));
-        // Chasers don't shoot for now
-        this.getComponent(Weapon)!.enabled = false;
+        this.addComponent(new Health(data.health, this));
+        this.addComponent(new Movement(data.movement.speed));
+        if (data.movement.sine) {
+            this.addComponent(new SineMovement(data.movement.sine.amplitude, data.movement.sine.frequency));
+        }
 
         // Listen once per enemy, not on every enable(): pooled enemies are reused many times
         const health = this.getComponent(Health);
         health?.on(Health.CHANGE_EVENT, () => {
+            this._isHit = true;
             this.setTintFill(0xffffff);
 
             if (health?.current == 0)
@@ -37,7 +36,8 @@ export default class Enemy extends Entity {
             }
 
             this.scene.time.delayedCall(50, () => {
-                this.clearTint();
+                this._isHit = false;
+                this.applyBaseTint();
 
                 if (health?.current == 0)
                 {
@@ -46,10 +46,17 @@ export default class Enemy extends Entity {
             });
         });
 
-        // Only enemies with an enabled weapon shoot
-        if (this.getComponent(Weapon)?.enabled) {
+        this.applyBaseTint();
+
+        // Only enemies with a weapon shoot
+        if (data.weapon) {
+            this.addComponent(new Weapon(bulletsGroup, {
+                ...data.weapon.bullet,
+                color: Phaser.Display.Color.HexStringToColor(data.weapon.bullet.color).color
+            }));
+
             this._shootTimerConfig = {
-                delay: Phaser.Math.Between(2000, 3000),
+                delay: Phaser.Math.Between(data.weapon.shootDelayMin, data.weapon.shootDelayMax),
                 callback: this.shoot,
                 callbackScope: this,
                 loop: true
@@ -77,9 +84,12 @@ export default class Enemy extends Entity {
         this.enableBody(true, x, y, true, true);
         this._shootTimer?.reset(this._shootTimerConfig);
 
-        // Restore health, in case the enemy is reused from the pool, without emitting events
+        // Restore the state of a pooled enemy: health without emitting events, tint and sine wave
         const health = this.getComponent(Health);
         health?.heal(health!.max, false);
+        this._isHit = false;
+        this.applyBaseTint();
+        this.getComponent(SineMovement)?.reset();
     }
 
     public disable() {
@@ -91,12 +101,20 @@ export default class Enemy extends Entity {
             this._shootTimer.paused = true;
     }
 
+    private applyBaseTint() {
+        if (this._data.tint) {
+            this.setTint(Phaser.Display.Color.HexStringToColor(this._data.tint).color);
+        } else {
+            this.clearTint();
+        }
+    }
+
     private shoot() {
         this.play('ufoShoot');
         this.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
-            this.setTexture('sprites', 'ufoRed');
+            this.setTexture('sprites', this._data.texture);
 
-            this.getComponent(Weapon)?.shoot(this);
+            this.getComponent(Weapon)?.shootSpread(this, this._data.weapon!.spread);
             this.scene.sound.play('sfx_laser2');
         });
     }
@@ -108,9 +126,9 @@ export default class Enemy extends Entity {
         this._directionToTarget.set(this._target.x - this.x, this._target.y - this.y).normalize();
         this.rotation = this._directionToTarget.angle();
 
-        if (!this.isTinted)
-            this.getComponent(Movement)?.move(this, this._directionToTarget, deltaTime);
-        else
-            this.getComponent(Movement)?.move(this, this._directionToTarget, deltaTime * 0.5);
+        // Slow down while flashing after a hit
+        const scaledDeltaTime: number = this._isHit ? deltaTime * 0.5 : deltaTime;
+        this.getComponent(Movement)?.move(this, this._directionToTarget, scaledDeltaTime);
+        this.getComponent(SineMovement)?.move(this, this._directionToTarget, scaledDeltaTime);
     }
 }

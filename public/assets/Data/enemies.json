@@ -1,0 +1,13 @@
+{
+  "ufoRed": {
+    "texture": "ufoRed",
+    "health": 1,
+    "spawn": {
+      "delay": 500,
+      "maxActive": 50
+    },
+    "movement": {
+      "speed": 0.2
+    }
+  }
+}
