@@ -4,11 +4,32 @@
 			"image": "gameSprites.png",
 			"format": "RGBA8888",
 			"size": {
-				"w": 174,
-				"h": 416
+				"w": 260,
+				"h": 858
 			},
 			"scale": 1,
 			"frames": [
+				{
+					"filename": "bossMothership",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 256,
+						"h": 256
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 256,
+						"h": 256
+					},
+					"frame": {
+						"x": 2,
+						"y": 2,
+						"w": 256,
+						"h": 256
+					}
+				},
 				{
 					"filename": "playerShip2_blue",
 					"rotated": false,
@@ -25,7 +46,7 @@
 					},
 					"frame": {
 						"x": 2,
-						"y": 2,
+						"y": 262,
 						"w": 75,
 						"h": 112
 					}
@@ -46,7 +67,7 @@
 					},
 					"frame": {
 						"x": 2,
-						"y": 118,
+						"y": 378,
 						"w": 75,
 						"h": 99
 					}
@@ -67,7 +88,7 @@
 					},
 					"frame": {
 						"x": 2,
-						"y": 221,
+						"y": 481,
 						"w": 75,
 						"h": 98
 					}
@@ -88,7 +109,7 @@
 					},
 					"frame": {
 						"x": 2,
-						"y": 323,
+						"y": 583,
 						"w": 91,
 						"h": 91
 					}
@@ -109,7 +130,7 @@
 					},
 					"frame": {
 						"x": 81,
-						"y": 2,
+						"y": 262,
 						"w": 91,
 						"h": 91
 					}
@@ -130,9 +151,72 @@
 					},
 					"frame": {
 						"x": 81,
-						"y": 97,
+						"y": 357,
 						"w": 91,
 						"h": 91
+					}
+				},
+				{
+					"filename": "heartEmpty",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 64,
+						"h": 64
+					},
+					"frame": {
+						"x": 81,
+						"y": 452,
+						"w": 64,
+						"h": 64
+					}
+				},
+				{
+					"filename": "spark",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 32,
+						"h": 32
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 32,
+						"h": 32
+					},
+					"frame": {
+						"x": 81,
+						"y": 520,
+						"w": 32,
+						"h": 32
+					}
+				},
+				{
+					"filename": "heartFull",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 64,
+						"h": 64
+					},
+					"frame": {
+						"x": 2,
+						"y": 678,
+						"w": 64,
+						"h": 64
 					}
 				},
 				{
@@ -150,8 +234,8 @@
 						"h": 26
 					},
 					"frame": {
-						"x": 81,
-						"y": 192,
+						"x": 2,
+						"y": 746,
 						"w": 33,
 						"h": 26
 					}
@@ -171,8 +255,8 @@
 						"h": 24
 					},
 					"frame": {
-						"x": 81,
-						"y": 222,
+						"x": 2,
+						"y": 776,
 						"w": 25,
 						"h": 24
 					}
@@ -192,8 +276,8 @@
 						"h": 24
 					},
 					"frame": {
-						"x": 81,
-						"y": 250,
+						"x": 2,
+						"y": 804,
 						"w": 25,
 						"h": 24
 					}
@@ -213,8 +297,8 @@
 						"h": 24
 					},
 					"frame": {
-						"x": 81,
-						"y": 278,
+						"x": 2,
+						"y": 832,
 						"w": 24,
 						"h": 24
 					}

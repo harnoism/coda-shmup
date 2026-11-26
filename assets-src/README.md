@@ -22,7 +22,15 @@ nommée comme le fichier sans son extension : `ufoRed.png` devient la frame `'uf
 Les sprites viennent du pack Kenney « Space Shooter Redux », licence CC0 (domaine public) : https://kenney.nl/assets/space-shooter-redux
 `ufoRed-shoot0` et `ufoRed-shoot1` n'en font pas partie : ce sont des variantes de `ufoRed` pour l'animation de tir.
 
+## Sprites ajoutés pour le projet
+
+`bossMothership`, `heartFull`, `heartEmpty` et `spark` ont été dessinés pour ce jeu (pas de pack externe).
+
 ## Ce qui reste hors de l'atlas
+
+`public/assets/Spritesheet/explosionPink.png` : planche d'explosion de 10 images de 148x151 (5x2), fournie par l'élève,
+dont le fond sombre a été converti en transparence. Vérifier les droits d'utilisation avant de publier le jeu.
+
 
 Les images répétées, comme le fond `darkPurple`, restent des images à part (`public/assets/Backgrounds/`).
 Dans un atlas, le filtrage de la carte graphique lit quelques pixels autour de chaque frame :
