@@ -1,0 +1,33 @@
+[
+  {
+    "enemies": [
+      {"type": "ufoRed", "count": 8}
+    ]
+  },
+  {
+    "enemies": [
+      {"type": "ufoRed", "count": 12},
+      {"type": "ufoPink", "count": 3}
+    ]
+  },
+  {
+    "enemies": [
+      {"type": "ufoRed", "count": 15},
+      {"type": "ufoPink", "count": 5}
+    ],
+    "boss": "bossMothership"
+  },
+  {
+    "enemies": [
+      {"type": "ufoRed", "count": 20},
+      {"type": "ufoPink", "count": 8}
+    ]
+  },
+  {
+    "enemies": [
+      {"type": "ufoRed", "count": 25},
+      {"type": "ufoPink", "count": 10}
+    ],
+    "boss": "bossMothership"
+  }
+]

@@ -1,12 +1,22 @@
 import {BulletData} from "../gameData/BulletData.ts";
+import GameConstants from "../GameConstants.ts";
 
 export default class Bullet extends Phaser.GameObjects.Rectangle {
+    // Milliseconds between two trail particles
+    private static readonly TRAIL_INTERVAL: number = 40;
+
     private _arcadeBody: Phaser.Physics.Arcade.Body;
 
     private _damage: number = 0;
+    private _color: number = 0xffffff;
+    private _trailTimer: number = 0;
 
     public get damage(): number {
         return this._damage;
+    }
+
+    public get color(): number {
+        return this._color;
     }
 
     public init() {
@@ -29,6 +39,8 @@ export default class Bullet extends Phaser.GameObjects.Rectangle {
 
         this._arcadeBody.setVelocity(velocityX, velocityY);
         this._damage = data.damage;
+        this._color = data.color;
+        this._trailTimer = 0;
 
         // Rotate the bullet to face the direction it's moving
         this.setRotation(this._arcadeBody.velocity.angle());
@@ -51,10 +63,15 @@ export default class Bullet extends Phaser.GameObjects.Rectangle {
     update(timeSinceLaunch: number, deltaTime: number) {
         super.update(timeSinceLaunch, deltaTime);
 
-        // Bullets can now fly in any direction: recycle them when they leave the screen on any side
-        const camera = this.scene.cameras.main;
-        if (this.x < -this.displayWidth || this.x > camera.width + this.displayWidth
-            || this.y < -this.displayHeight || this.y > camera.height + this.displayHeight) {
+        this._trailTimer += deltaTime;
+        if (this._trailTimer >= Bullet.TRAIL_INTERVAL) {
+            this._trailTimer = 0;
+            this.scene.events.emit(GameConstants.Events.BULLET_TRAIL_EVENT, this.x, this.y, this._color);
+        }
+
+        // Recycle bullets when they leave the arena on any side
+        if (this.x < -this.displayWidth || this.x > GameConstants.ARENA_WIDTH + this.displayWidth
+            || this.y < -this.displayHeight || this.y > GameConstants.ARENA_HEIGHT + this.displayHeight) {
             this.disable();
         }
     }

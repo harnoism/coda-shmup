@@ -1,0 +1,78 @@
+{
+  "ufoRed": {
+    "texture": "ufoRed",
+    "shootAnimation": "ufoShoot",
+    "health": 1,
+    "spawn": {
+      "delay": 500,
+      "maxActive": 50
+    },
+    "movement": {
+      "speed": 0.2
+    }
+  },
+  "ufoPink": {
+    "texture": "ufoRed",
+    "shootAnimation": "ufoShoot",
+    "tint": "#ff69b4",
+    "health": 2,
+    "spawn": {
+      "delay": 4000,
+      "maxActive": 5
+    },
+    "movement": {
+      "speed": 0.15,
+      "sine": {
+        "amplitude": 200,
+        "frequency": 0.5
+      }
+    },
+    "weapon": {
+      "shootDelayMin": 2500,
+      "shootDelayMax": 3500,
+      "bullet": {
+        "width": 12,
+        "height": 12,
+        "color": "#ff69b4",
+        "speed": 400,
+        "damage": 1
+      },
+      "spread": {
+        "count": 5,
+        "angle": 60
+      }
+    }
+  },
+  "bossMothership": {
+    "texture": "bossMothership",
+    "boss": true,
+    "health": 40,
+    "spawn": {
+      "delay": 1000,
+      "maxActive": 1
+    },
+    "movement": {
+      "speed": 0.1,
+      "stopDistance": 600,
+      "sine": {
+        "amplitude": 250,
+        "frequency": 0.25
+      }
+    },
+    "weapon": {
+      "shootDelayMin": 2000,
+      "shootDelayMax": 2500,
+      "bullet": {
+        "width": 20,
+        "height": 20,
+        "color": "#ffb703",
+        "speed": 380,
+        "damage": 1
+      },
+      "spread": {
+        "count": 16,
+        "angle": 360
+      }
+    }
+  }
+}
