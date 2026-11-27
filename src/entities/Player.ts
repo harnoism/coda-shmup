@@ -8,10 +8,13 @@ import Weapon from "../components/Weapon.ts";
 import GameConstants from "../GameConstants.ts";
 
 export default class Player extends Entity {
+    // Milliseconds between two engine trail particles while the ship moves
+    private static readonly TRAIL_INTERVAL: number = 45;
+
     private readonly _bulletData: BulletData = {
         width: 12,
         height: 4,
-        color: 0xffe066,
+        color: GameConstants.PlayerTheme.BULLET_COLOR,
         speed: 1024,
         damage: 1
     };
@@ -23,6 +26,7 @@ export default class Player extends Entity {
     private readonly _moveDirection: Phaser.Math.Vector2 = new Phaser.Math.Vector2();
     private readonly _shootDirection: Phaser.Math.Vector2 = new Phaser.Math.Vector2();
     private _targets: Phaser.Physics.Arcade.Group[] = [];
+    private _trailTimer: number = 0;
 
     constructor(scene: Scene, x: number, y: number) {
         super(scene, x, y, 'sprites');
@@ -90,6 +94,8 @@ export default class Player extends Entity {
 
             // Face the move direction
             this.rotation = this._moveDirection.angle();
+
+            this.emitTrail(deltaTime);
         }
 
         // Stop player from leaving the arena
@@ -107,6 +113,18 @@ export default class Player extends Entity {
                 this._lastShotTime = timeSinceLaunch;
             }
         }
+    }
+
+    // Engine particles behind the ship, drawn by the EffectsManager
+    private emitTrail(deltaTime: number) {
+        this._trailTimer += deltaTime;
+        if (this._trailTimer < Player.TRAIL_INTERVAL)
+            return;
+
+        this._trailTimer = 0;
+        const behindX: number = this.x - Math.cos(this.rotation) * this.displayWidth * 0.4;
+        const behindY: number = this.y - Math.sin(this.rotation) * this.displayWidth * 0.4;
+        this.scene.events.emit(GameConstants.Events.PLAYER_TRAIL_EVENT, behindX, behindY, GameConstants.PlayerTheme.EFFECT_COLOR);
     }
 
     public setTargets(targets: Phaser.Physics.Arcade.Group[]) {

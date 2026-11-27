@@ -36,6 +36,7 @@ export default class EntityManager extends Plugins.ScenePlugin implements WaveSp
     private _playerBullets: Physics.Arcade.Group;
     private readonly _enemyTypes: Map<string, EnemyType> = new Map();
     private _enemyBullets: Physics.Arcade.Group;
+    private _waveManager: WaveManager | undefined;
     private readonly _spawnOffset: Phaser.Math.Vector2 = new Phaser.Math.Vector2();
 
     constructor(scene: Scene, pluginManager: Plugins.PluginManager) {
@@ -88,7 +89,8 @@ export default class EntityManager extends Plugins.ScenePlugin implements WaveSp
         this._player.setTargets(Array.from(this._enemyTypes.values(), enemyType => enemyType.group));
 
         const wavesData = this.scene!.cache.json.get('waves') as WavesData;
-        new WaveManager(this.scene!, wavesData, difficulty.waveCountMultiplier, this).start();
+        this._waveManager = new WaveManager(this.scene!, wavesData, difficulty.waveCountMultiplier, this);
+        this._waveManager.start();
 
         console.log("[EntityManager] Enemies initialized");
     }
@@ -144,6 +146,25 @@ export default class EntityManager extends Plugins.ScenePlugin implements WaveSp
         const difficultyKey: string = this.scene!.registry.get(RegistryConstants.Keys.DIFFICULTY) ?? GameConstants.DEFAULT_DIFFICULTY;
 
         return difficulties[difficultyKey] ?? difficulties[GameConstants.DEFAULT_DIFFICULTY];
+    }
+
+    // Debug cheat: see WaveManager.skipToBossWave
+    public skipToBossWave(): boolean {
+        return this._waveManager?.skipToBossWave() ?? false;
+    }
+
+    public clearEnemies() {
+        // Damaged to death rather than disabled: the death effects play and the boss bar of the UI closes itself
+        for (const enemyType of this._enemyTypes.values()) {
+            for (const enemy of enemyType.group.getMatching('active', true) as Enemy[]) {
+                const health = enemy.getComponent(Health);
+                health?.damage(health.max);
+            }
+        }
+
+        for (const bullet of this._enemyBullets.getMatching('active', true) as Bullet[]) {
+            bullet.disable();
+        }
     }
 
     public getSpawnData(enemyKey: string): EnemySpawnData {

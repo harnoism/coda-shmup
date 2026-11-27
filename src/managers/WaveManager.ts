@@ -10,6 +10,8 @@ export interface WaveSpawner {
     countAllActive(): number;
     // Returns false when no enemy could be spawned
     spawn(enemyKey: string): boolean;
+    // Kills every active enemy and removes their bullets
+    clearEnemies(): void;
 }
 
 // Plays the waves of waves.json one after the other, forever: once the last one is done, they start over with more enemies
@@ -24,6 +26,8 @@ export default class WaveManager {
     private readonly _remaining: Map<string, number> = new Map();
     private readonly _nextSpawnTime: Map<string, number> = new Map();
     private _bossKey: string | undefined;
+    // The delayed call that moves the manager to its next state: only one at a time
+    private _pendingTimer: Time.TimerEvent | undefined;
 
     public constructor(scene: Scene, waves: WavesData, countMultiplier: number, spawner: WaveSpawner) {
         this._scene = scene;
@@ -38,7 +42,33 @@ export default class WaveManager {
         this._scene.time.addEvent({delay: 100, callback: this.update, callbackScope: this, loop: true});
     }
 
-    private startWave(waveIndex: number) {
+    // Debug cheat: drops the current wave and plays the next wave that has a boss (the current one if it has one),
+    // with the boss only. Returns false when no wave has a boss
+    public skipToBossWave(): boolean {
+        const bossWaveIndex: number = this.findBossWaveIndex();
+        if (bossWaveIndex < 0)
+            return false;
+
+        // Cancel what was scheduled for the old wave, then kill what is left of it:
+        // the state is no longer 'boss' when the boss dies, so the old wave can't end by itself
+        this._pendingTimer?.remove();
+        this.startWave(bossWaveIndex, true);
+        this._spawner.clearEnemies();
+
+        return true;
+    }
+
+    private findBossWaveIndex(): number {
+        for (let offset: number = 0; offset < this._waves.length; offset++) {
+            const waveIndex: number = this._waveIndex + offset;
+            if (this._waves[waveIndex % this._waves.length].boss !== undefined)
+                return waveIndex;
+        }
+
+        return -1;
+    }
+
+    private startWave(waveIndex: number, bossOnly: boolean = false) {
         this._waveIndex = waveIndex;
 
         const wave: WaveData = this._waves[waveIndex % this._waves.length];
@@ -47,7 +77,7 @@ export default class WaveManager {
 
         this._remaining.clear();
         this._nextSpawnTime.clear();
-        for (const enemy of wave.enemies) {
+        for (const enemy of bossOnly ? [] : wave.enemies) {
             this._remaining.set(enemy.type, Math.max(1, Math.ceil(enemy.count * this._countMultiplier * lapMultiplier)));
             this._nextSpawnTime.set(enemy.type, 0);
         }
@@ -56,7 +86,7 @@ export default class WaveManager {
         // Let the player read the announcement on an empty screen before the first enemy
         this._state = 'announcing';
         this._scene.game.events.emit(GameConstants.Events.WAVE_STARTED_EVENT, waveIndex + 1, wave.boss !== undefined);
-        this._scene.time.delayedCall(GameConstants.WAVE_START_DELAY, () => this._state = 'spawning');
+        this._pendingTimer = this._scene.time.delayedCall(GameConstants.WAVE_START_DELAY, () => this._state = 'spawning');
     }
 
     private update() {
@@ -97,6 +127,6 @@ export default class WaveManager {
 
     private endWave() {
         this._state = 'intermission';
-        this._scene.time.delayedCall(GameConstants.WAVE_INTERMISSION_DELAY, () => this.startWave(this._waveIndex + 1));
+        this._pendingTimer = this._scene.time.delayedCall(GameConstants.WAVE_INTERMISSION_DELAY, () => this.startWave(this._waveIndex + 1));
     }
 }

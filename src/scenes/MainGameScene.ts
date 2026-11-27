@@ -49,6 +49,10 @@ export default class MainGameScene extends Scene {
 
         if (this.input.keyboard) {
             this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R).on('down', () => this.scene.restart());
+
+            if (GameConstants.DEBUG_CHEATS_ENABLED) {
+                this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B).on('down', this.onBossCheat, this);
+            }
         } else {
             console.error('No keyboard input');
         }
@@ -56,6 +60,15 @@ export default class MainGameScene extends Scene {
         this.registry.set(RegistryConstants.Keys.PLAYER_SCORE, 0);
 
         console.log("MainGameScene created");
+    }
+
+    // Debug cheat (B): jump straight to the boss wave
+    private onBossCheat() {
+        if (!this.entityManager.skipToBossWave())
+            return;
+
+        console.log("[Cheat] Boss wave");
+        this.game.events.emit(GameConstants.Events.DEBUG_MESSAGE_EVENT, "BOSS WAVE");
     }
 
     private endGame() {
