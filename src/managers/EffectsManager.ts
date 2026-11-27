@@ -13,8 +13,8 @@ export default class EffectsManager {
     private static readonly EXPLOSION_KEY: string = 'explosionPink';
     private static readonly MAX_EXPLOSIONS: number = 32;
     private static readonly DEPTH: number = 10;
-    private static readonly PLAYER_COLOR: number = 0x66ccff;
-    private static readonly DAMAGE_COLOR: number = 0xff4d8d;
+    private static readonly PLAYER_COLOR: number = GameConstants.PlayerTheme.EFFECT_COLOR;
+    private static readonly DAMAGE_COLOR: number = GameConstants.PlayerTheme.DAMAGE_COLOR;
 
     private static readonly EFFECTS: Record<EffectName, ParticleConfig> = {
         muzzleFlash: {speed: {min: 40, max: 140}, lifespan: 150, scale: {start: 0.4, end: 0}, alpha: {start: 1, end: 0}},
@@ -49,7 +49,8 @@ export default class EffectsManager {
         scene.events.on(GameConstants.Events.ENTITY_DAMAGED_EVENT, this.onEntityDamaged, this);
         scene.events.on(GameConstants.Events.BULLET_FIRED_EVENT, this.onBulletFired, this);
         scene.events.on(GameConstants.Events.BULLET_HIT_EVENT, this.onBulletHit, this);
-        scene.events.on(GameConstants.Events.BULLET_TRAIL_EVENT, this.onBulletTrail, this);
+        scene.events.on(GameConstants.Events.BULLET_TRAIL_EVENT, this.onTrail, this);
+        scene.events.on(GameConstants.Events.PLAYER_TRAIL_EVENT, this.onTrail, this);
     }
 
     public destroy() {
@@ -57,7 +58,8 @@ export default class EffectsManager {
         this._scene.events.off(GameConstants.Events.ENTITY_DAMAGED_EVENT, this.onEntityDamaged, this);
         this._scene.events.off(GameConstants.Events.BULLET_FIRED_EVENT, this.onBulletFired, this);
         this._scene.events.off(GameConstants.Events.BULLET_HIT_EVENT, this.onBulletHit, this);
-        this._scene.events.off(GameConstants.Events.BULLET_TRAIL_EVENT, this.onBulletTrail, this);
+        this._scene.events.off(GameConstants.Events.BULLET_TRAIL_EVENT, this.onTrail, this);
+        this._scene.events.off(GameConstants.Events.PLAYER_TRAIL_EVENT, this.onTrail, this);
 
         // The emitters and explosions are game objects: the scene destroys them
         this._emitters.clear();
@@ -95,7 +97,7 @@ export default class EffectsManager {
         this.burst('impactFlash', 0xffffff, x, y, 1);
     }
 
-    private onBulletTrail(x: number, y: number, color: number) {
+    private onTrail(x: number, y: number, color: number) {
         this.getEmitter('trail', color).emitParticleAt(x, y, 1);
     }
 

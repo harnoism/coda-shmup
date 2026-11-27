@@ -20,6 +20,7 @@ export default class MainUIScene extends Scene {
     private _bossBanner: GameObjects.Text;
     private _bossLabel: GameObjects.Text;
     private _bossBar: GameObjects.Graphics;
+    private _debugText: GameObjects.Text;
 
     constructor() {
         super(GameConstants.SceneKeys.MAIN_UI);
@@ -30,12 +31,14 @@ export default class MainUIScene extends Scene {
         this.game.events.on(GameConstants.Events.PLAYER_SPAWNED_EVENT, this.onPlayerSpawned, this);
         this.game.events.on(GameConstants.Events.ENEMY_SPAWNED_EVENT, this.onEnemySpawned, this);
         this.game.events.on(GameConstants.Events.WAVE_STARTED_EVENT, this.onWaveStarted, this);
+        this.game.events.on(GameConstants.Events.DEBUG_MESSAGE_EVENT, this.onDebugMessage, this);
         this.registry.events.on(RegistryConstants.Events.PLAYER_SCORE_CHANGE, this.onPlayerScoreChanged, this);
 
         this.events.once(Scenes.Events.SHUTDOWN, () => {
             this.game.events.off(GameConstants.Events.PLAYER_SPAWNED_EVENT, this.onPlayerSpawned, this);
             this.game.events.off(GameConstants.Events.ENEMY_SPAWNED_EVENT, this.onEnemySpawned, this);
             this.game.events.off(GameConstants.Events.WAVE_STARTED_EVENT, this.onWaveStarted, this);
+            this.game.events.off(GameConstants.Events.DEBUG_MESSAGE_EVENT, this.onDebugMessage, this);
             this.registry.events.off(RegistryConstants.Events.PLAYER_SCORE_CHANGE, this.onPlayerScoreChanged, this);
         }, this);
     }
@@ -63,6 +66,9 @@ export default class MainUIScene extends Scene {
         this._bossLabel = this.add.text(centerX, MainUIScene.MARGIN - 24, "BOSS", this.textStyle(40, MainUIScene.BOSS_BAR_CSS_COLOR))
             .setOrigin(0.5, 0).setVisible(false);
         this._bossBar = this.add.graphics().setVisible(false);
+
+        this._debugText = this.add.text(centerX, this.scale.height - MainUIScene.MARGIN, "", this.textStyle(48, "#ffb3e6"))
+            .setOrigin(0.5, 1).setAlpha(0);
 
         this.scene.bringToTop();
 
@@ -114,6 +120,17 @@ export default class MainUIScene extends Scene {
             ease: 'Back.easeOut',
             hold: GameConstants.WAVE_START_DELAY - 1200,
             yoyo: true
+        });
+    }
+
+    private onDebugMessage(message: string) {
+        this.tweens.killTweensOf(this._debugText);
+        this._debugText.setText("[DEBUG] " + message).setAlpha(1);
+        this.tweens.add({
+            targets: this._debugText,
+            alpha: 0,
+            delay: GameConstants.DEBUG_MESSAGE_DURATION,
+            duration: 400
         });
     }
 

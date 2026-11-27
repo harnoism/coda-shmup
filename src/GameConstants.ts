@@ -9,6 +9,9 @@ export default class GameConstants {
         BULLET_FIRED_EVENT: "bulletFired",
         BULLET_HIT_EVENT: "bulletHit",
         BULLET_TRAIL_EVENT: "bulletTrail",
+        PLAYER_TRAIL_EVENT: "playerTrail",
+        // Emitted on the game events: a short message for the UI to show (debug cheats feedback)
+        DEBUG_MESSAGE_EVENT: "debugMessage",
     } as const);
 
     public static readonly SceneKeys = Object.freeze({
@@ -17,6 +20,19 @@ export default class GameConstants {
         MAIN_UI: "MainUIScene",
         GAME_OVER: "GameOverScene",
     } as const);
+
+    // Colors of everything that belongs to the player: the pink sprites of the ships are in assets-src/sprites.
+    // The bullets are a lighter pastel pink than the pink enemies (#ff69b4) so the two stay easy to tell apart.
+    public static readonly PlayerTheme = Object.freeze({
+        BULLET_COLOR: 0xffb3e6,
+        EFFECT_COLOR: 0xff5cc8,
+        // Hit feedback: red, not pink, since the player is pink now
+        DAMAGE_COLOR: 0xff3b3b,
+    } as const);
+
+    // Debug shortcuts (B: jump to the boss wave), only in `npm run dev`, not in the production build
+    public static readonly DEBUG_CHEATS_ENABLED: boolean = import.meta.env.DEV;
+    public static readonly DEBUG_MESSAGE_DURATION: number = 1500;
 
     // Key of the difficulty in difficulties.json used until the player picks one
     public static readonly DEFAULT_DIFFICULTY: string = "normal";

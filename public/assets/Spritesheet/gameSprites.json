@@ -5,7 +5,7 @@
 			"format": "RGBA8888",
 			"size": {
 				"w": 260,
-				"h": 858
+				"h": 997
 			},
 			"scale": 1,
 			"frames": [
@@ -52,6 +52,27 @@
 					}
 				},
 				{
+					"filename": "playerShip2_pink",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 75,
+						"h": 112
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 75,
+						"h": 112
+					},
+					"frame": {
+						"x": 2,
+						"y": 378,
+						"w": 75,
+						"h": 112
+					}
+				},
+				{
 					"filename": "playerShip1_blue",
 					"rotated": false,
 					"trimmed": false,
@@ -67,7 +88,28 @@
 					},
 					"frame": {
 						"x": 2,
-						"y": 378,
+						"y": 494,
+						"w": 75,
+						"h": 99
+					}
+				},
+				{
+					"filename": "playerShip1_pink",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 75,
+						"h": 99
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 75,
+						"h": 99
+					},
+					"frame": {
+						"x": 2,
+						"y": 597,
 						"w": 75,
 						"h": 99
 					}
@@ -88,7 +130,28 @@
 					},
 					"frame": {
 						"x": 2,
-						"y": 481,
+						"y": 700,
+						"w": 75,
+						"h": 98
+					}
+				},
+				{
+					"filename": "playerShip3_pink",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 75,
+						"h": 98
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 75,
+						"h": 98
+					},
+					"frame": {
+						"x": 2,
+						"y": 802,
 						"w": 75,
 						"h": 98
 					}
@@ -109,7 +172,7 @@
 					},
 					"frame": {
 						"x": 2,
-						"y": 583,
+						"y": 904,
 						"w": 91,
 						"h": 91
 					}
@@ -129,8 +192,8 @@
 						"h": 91
 					},
 					"frame": {
-						"x": 81,
-						"y": 262,
+						"x": 97,
+						"y": 904,
 						"w": 91,
 						"h": 91
 					}
@@ -151,7 +214,7 @@
 					},
 					"frame": {
 						"x": 81,
-						"y": 357,
+						"y": 262,
 						"w": 91,
 						"h": 91
 					}
@@ -172,7 +235,28 @@
 					},
 					"frame": {
 						"x": 81,
-						"y": 452,
+						"y": 357,
+						"w": 64,
+						"h": 64
+					}
+				},
+				{
+					"filename": "heartFull",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 64,
+						"h": 64
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 64,
+						"h": 64
+					},
+					"frame": {
+						"x": 81,
+						"y": 425,
 						"w": 64,
 						"h": 64
 					}
@@ -193,30 +277,9 @@
 					},
 					"frame": {
 						"x": 81,
-						"y": 520,
+						"y": 493,
 						"w": 32,
 						"h": 32
-					}
-				},
-				{
-					"filename": "heartFull",
-					"rotated": false,
-					"trimmed": false,
-					"sourceSize": {
-						"w": 64,
-						"h": 64
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 0,
-						"w": 64,
-						"h": 64
-					},
-					"frame": {
-						"x": 2,
-						"y": 678,
-						"w": 64,
-						"h": 64
 					}
 				},
 				{
@@ -234,8 +297,29 @@
 						"h": 26
 					},
 					"frame": {
-						"x": 2,
-						"y": 746,
+						"x": 81,
+						"y": 529,
+						"w": 33,
+						"h": 26
+					}
+				},
+				{
+					"filename": "playerLife1_pink",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 33,
+						"h": 26
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 33,
+						"h": 26
+					},
+					"frame": {
+						"x": 117,
+						"y": 493,
 						"w": 33,
 						"h": 26
 					}
@@ -255,8 +339,8 @@
 						"h": 24
 					},
 					"frame": {
-						"x": 2,
-						"y": 776,
+						"x": 149,
+						"y": 357,
 						"w": 25,
 						"h": 24
 					}
@@ -276,8 +360,8 @@
 						"h": 24
 					},
 					"frame": {
-						"x": 2,
-						"y": 804,
+						"x": 176,
+						"y": 262,
 						"w": 25,
 						"h": 24
 					}
@@ -297,8 +381,8 @@
 						"h": 24
 					},
 					"frame": {
-						"x": 2,
-						"y": 832,
+						"x": 176,
+						"y": 290,
 						"w": 24,
 						"h": 24
 					}
