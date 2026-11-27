@@ -1,4 +1,5 @@
-import {Scene} from "phaser";
+
+import Phaser, { Scene } from "phaser";
 import GameConstants from "../GameConstants.ts";
 import type {EnemySpawnData} from "../gameData/EnemyData.ts";
 import type {WaveData, WavesData} from "../gameData/WaveData.ts";
@@ -27,7 +28,7 @@ export default class WaveManager {
     private readonly _nextSpawnTime: Map<string, number> = new Map();
     private _bossKey: string | undefined;
     // The delayed call that moves the manager to its next state: only one at a time
-    private _pendingTimer: Time.TimerEvent | undefined;
+    private _pendingTimer: Phaser.Time.TimerEvent | undefined;
 
     public constructor(scene: Scene, waves: WavesData, countMultiplier: number, spawner: WaveSpawner) {
         this._scene = scene;
