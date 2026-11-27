@@ -1,3 +1,4 @@
+
 import Phaser, { Scene } from "phaser";
 import GameConstants from "../GameConstants.ts";
 import type {EnemySpawnData} from "../gameData/EnemyData.ts";
